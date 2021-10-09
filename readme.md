@@ -20,7 +20,7 @@ email-go-checker -email="email-that-needs-validation@doamin.com" -email-from-tes
 ### API Server
 ```
 # go run
-go rin . -serve
+go run . -serve
 
 # compiled cli
 email-go-checker -serve
