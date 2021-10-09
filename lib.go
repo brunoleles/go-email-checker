@@ -53,7 +53,6 @@ func message(level Verbosity, mesage string) {
 }
 
 func setupGin() *gin.Engine {
-	// Disable Console Color
 	// gin.DisableConsoleColor()
 
 	r := gin.Default()

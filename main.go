@@ -58,5 +58,5 @@ func runCheckEmail() {
 
 func runRestServer() {
 	gin := setupGin()
-	gin.Run(runOptions.serverPort)
+	gin.Run(fmt.Sprintf(":%s", runOptions.serverPort))
 }
