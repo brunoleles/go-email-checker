@@ -1,6 +1,10 @@
 # Email Go Checker 
 
-> 
+> Simple e-mail validation utility
+
+* Validades e-mail syntax
+* Validades e-dmail domain with MX Lookup
+* Tries to valide e-mail "existence" using SMTP protocol
 
 ## Usage
 

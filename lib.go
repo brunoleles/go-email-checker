@@ -13,8 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// App verbosity type
 type Verbosity int
 
+// App verbosity levels available
 const (
 	VERBOSITY_SILENT Verbosity = iota
 	VERBOSITY_ERROR
@@ -29,6 +31,7 @@ var (
 	ErrMXLookupError       = errors.New("mx lookup error")
 )
 
+// Application run/init options struct
 type RunOptions struct {
 	runAsServer bool
 	serverPort  string
@@ -37,6 +40,7 @@ type RunOptions struct {
 	verbosity   Verbosity
 }
 
+// Default application options, will be updateded on func main
 var runOptions = RunOptions{
 	runAsServer: false,
 	serverPort:  "8000",
@@ -45,6 +49,7 @@ var runOptions = RunOptions{
 	verbosity:   VERBOSITY_INFO,
 }
 
+// Send a debug message, respects app verbosity
 func message(level Verbosity, mesage string) {
 	if level > runOptions.verbosity {
 		return
@@ -52,6 +57,9 @@ func message(level Verbosity, mesage string) {
 	println(mesage)
 }
 
+// Creates the web server instance
+//
+// TODO: create a response struct, and return more information about the test to check e-mail request via API
 func setupGin() *gin.Engine {
 	// gin.DisableConsoleColor()
 
@@ -82,6 +90,7 @@ func setupGin() *gin.Engine {
 }
 
 // Execs the mx lookup
+//
 // TOOD: cache for domain lookup, to avoid multiple lookups to same domain
 func WrappedMxLookup(domain string) ([]*net.MX, error) {
 	mxs, err := net.LookupMX(domain)
