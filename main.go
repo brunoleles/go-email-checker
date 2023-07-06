@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"syscall"
@@ -40,20 +41,17 @@ func main() {
 }
 
 func runCheckEmail() {
-	valid, err := CheckEmailAddress(runOptions.email)
+	result, err := CheckEmailAddress(runOptions.email)
 
 	if err != nil {
 		message(VERBOSITY_INFO, fmt.Sprintf("%s nok, err: \"%s\"", runOptions.email, err.Error()))
-		syscall.Exit(1)
+		// syscall.Exit(1)
 	}
 
-	if valid {
-		message(VERBOSITY_INFO, fmt.Sprintf("%s ok", runOptions.email))
-		syscall.Exit(0)
-	}
+	jsonResult, _ := json.MarshalIndent(result, "", "  ")
 
-	message(VERBOSITY_INFO, fmt.Sprintf("%s nok", runOptions.email))
-	syscall.Exit(1)
+	message(VERBOSITY_INFO, fmt.Sprintf("%s", jsonResult))
+	syscall.Exit(0)
 }
 
 func runRestServer() {

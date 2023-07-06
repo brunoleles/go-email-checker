@@ -40,6 +40,14 @@ type RunOptions struct {
 	verbosity   Verbosity
 }
 
+type CheckEmailAddressResult struct {
+	EmailAddress       string `json:"email_address"`
+	ValidEmailSyntax   bool   `json:"valid_email_syntax"`
+	ValidMxLookup      bool   `json:"valid_mx_Lookup"`
+	SmtpConfirmedEmail bool   `json:"smtp_confirmed_email"`
+	Error              string `json:"error,omitempty"`
+}
+
 // Default application options, will be updateded on func main
 var runOptions = RunOptions{
 	runAsServer: false,
@@ -72,18 +80,18 @@ func setupGin() *gin.Engine {
 	r.GET("/", func(c *gin.Context) {
 		email := c.Query("email")
 
-		valid, err := CheckEmailAddress(email)
+		_, err := CheckEmailAddress(email)
 		if err != nil {
 			c.String(http.StatusOK, "ERROR 2")
 			return
 		}
 
-		if valid {
-			c.String(http.StatusOK, "ok")
-			return
-		}
+		// if valid {
+		c.String(http.StatusOK, "ok")
+		// return
+		// }
 
-		c.String(http.StatusOK, "nok")
+		// c.String(http.StatusOK, "nok")
 	})
 
 	return r
@@ -101,32 +109,44 @@ func WrappedMxLookup(domain string) ([]*net.MX, error) {
 }
 
 // Checks email address
-func CheckEmailAddress(email string) (bool, error) {
+func CheckEmailAddress(email string) (CheckEmailAddressResult, error) {
 	message(VERBOSITY_DEBUG, fmt.Sprintf("Checking email address:\"%s\"...", email))
+
+	var result = CheckEmailAddressResult{
+		ValidEmailSyntax:   false,
+		ValidMxLookup:      false,
+		SmtpConfirmedEmail: false,
+	}
 
 	// Validating email address
 	address, err := mail.ParseAddress(email)
-
 	if err != nil {
 		message(VERBOSITY_DEBUG, fmt.Sprintf("err, invalid email address, err: \"%s\"", err.Error()))
-		return false, ErrInvalidEmailAddress
+		result.Error = err.Error()
+		return result, ErrInvalidEmailAddress
 	}
+
+	result.EmailAddress = address.Address
+	result.ValidEmailSyntax = true
 
 	// getting the email domain, for mx lookup
 	domain := regexp.MustCompile(`.*@(.*)`).ReplaceAllString(address.Address, "$1")
 	if err != nil {
 		message(VERBOSITY_DEBUG, fmt.Sprintf("err, unable to extract domain from, email: \"%s\", err: \"%s\"", email, err.Error()))
-		return false, ErrNoDomainFound
+		result.Error = err.Error()
+		return result, ErrNoDomainFound
 	}
 
 	// MX lookup
 	mxs, err := WrappedMxLookup(domain)
 	if err != nil {
 		message(VERBOSITY_DEBUG, fmt.Sprintf("err, mxlookup error, domain: \"%s\", err: \"%s\"", domain, err.Error()))
-		return false, ErrMXLookupError
+		result.Error = err.Error()
+		return result, ErrMXLookupError
 	}
 
-	sucess := false
+	result.ValidMxLookup = true
+
 	for _, mx := range mxs {
 		message(VERBOSITY_DEBUG, fmt.Sprintf("Testing email on MX host: %s:%d", mx.Host, 25))
 
@@ -161,9 +181,9 @@ func CheckEmailAddress(email string) (bool, error) {
 		}
 
 		message(VERBOSITY_DEBUG, "Email adress found on host")
-		sucess = true
+		result.SmtpConfirmedEmail = true
 		break
 	}
 
-	return sucess, nil
+	return result, nil
 }
