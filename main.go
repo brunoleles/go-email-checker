@@ -50,6 +50,8 @@ func runCheckEmail() {
 
 	jsonResult, _ := json.MarshalIndent(result, "", "  ")
 
+	//TODO: check json encode erros
+
 	message(VERBOSITY_INFO, fmt.Sprintf("%s", jsonResult))
 	syscall.Exit(0)
 }
