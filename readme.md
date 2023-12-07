@@ -3,7 +3,7 @@
 > Simple e-mail validation utility
 
 * Validates e-mail syntax
-* Validates e-dmail domain with MX Lookup
+* Validates e-mail domain through MX Lookup
 * Tries to valide e-mail "existence" using SMTP protocol
 
 ## Usage
