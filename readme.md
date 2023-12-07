@@ -13,8 +13,8 @@
 # go run
 go run . -email="email-that-needs-validation@doamin.com" -email-from-test="some-valid-email@email.com"
 
-# compiled cli
-email-go-checker -email="email-that-needs-validation@doamin.com" -email-from-test="some-valid-email@email.com"
+# compiled bin
+./email-go-checker -email="email-that-needs-validation@doamin.com" -email-from-test="some-valid-email@email.com"
 ```
 
 ### API Server
@@ -22,6 +22,6 @@ email-go-checker -email="email-that-needs-validation@doamin.com" -email-from-tes
 # go run
 go run . -serve
 
-# compiled cli
-email-go-checker -serve
+# compiled bin
+./email-go-checker -serve
 ```
