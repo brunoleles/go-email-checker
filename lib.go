@@ -40,6 +40,7 @@ type RunOptions struct {
 	verbosity   Verbosity
 }
 
+// E-mail check result data struct
 type CheckEmailAddressResult struct {
 	EmailAddress       string `json:"email_address"`
 	ValidEmailSyntax   bool   `json:"valid_email_syntax"`
@@ -63,38 +64,6 @@ func message(level Verbosity, mesage string) {
 		return
 	}
 	println(mesage)
-}
-
-// Creates the web server instance
-//
-// TODO: create a response struct, and return more information about the test to check e-mail request via API
-func setupGin() *gin.Engine {
-	// gin.DisableConsoleColor()
-
-	r := gin.Default()
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
-
-	r.GET("/", func(c *gin.Context) {
-		email := c.Query("email")
-
-		_, err := CheckEmailAddress(email)
-		if err != nil {
-			c.String(http.StatusOK, "ERROR 2")
-			return
-		}
-
-		// if valid {
-		c.String(http.StatusOK, "ok")
-		// return
-		// }
-
-		// c.String(http.StatusOK, "nok")
-	})
-
-	return r
 }
 
 // Execs the mx lookup
@@ -186,4 +155,31 @@ func CheckEmailAddress(email string) (CheckEmailAddressResult, error) {
 	}
 
 	return result, nil
+}
+
+// Creates the web server instance
+//
+// TODO: create a response struct, and return more information about the test to check e-mail request via API
+func setupGin() *gin.Engine {
+	// gin.DisableConsoleColor()
+
+	engine := gin.Default()
+
+	engine.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+
+	engine.GET("/", func(c *gin.Context) {
+		email := c.Query("email")
+
+		_, err := CheckEmailAddress(email)
+		if err != nil {
+			c.String(http.StatusOK, "ERROR 2")
+			return
+		}
+
+		c.String(http.StatusOK, "ok")
+	})
+
+	return engine
 }
