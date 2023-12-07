@@ -172,13 +172,12 @@ func setupGin() *gin.Engine {
 	engine.GET("/", func(c *gin.Context) {
 		email := c.Query("email")
 
-		_, err := CheckEmailAddress(email)
-		if err != nil {
-			c.String(http.StatusOK, "ERROR 2")
-			return
-		}
+		result, _ := CheckEmailAddress(email)
 
-		c.String(http.StatusOK, "ok")
+		// if err != nil {
+		// }
+
+		c.IndentedJSON(http.StatusOK, result)
 	})
 
 	return engine
